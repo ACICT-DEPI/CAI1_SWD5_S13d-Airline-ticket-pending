@@ -14,6 +14,7 @@ namespace FlightBookingSystem
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
 
             // Register DbContext with a connection string from appsettings.json
             builder.Services.AddDbContext<AirLineDBcontext>(options =>

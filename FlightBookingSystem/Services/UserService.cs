@@ -11,13 +11,13 @@ namespace FlightBookingSystem.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository userRepository;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IUserRepository userRepository;
 
-        public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public UserService(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
         {
-            this.userRepository = userRepository;
             this.httpContextAccessor = httpContextAccessor;
+            this.userRepository = userRepository;
         }
 
         public async Task<(bool IsSuccess, string ErrorMessage)> CreateUserAsync(CreateUserDto createUserDto)
@@ -56,13 +56,16 @@ namespace FlightBookingSystem.Services
         public async Task SignInUserAsync(string email)
         {
             var user = await userRepository.GetUserByEmailAsync(email);
+            Console.WriteLine($"User Role: {user.Role}");
+
             var claims = new[] {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
+
             await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
 

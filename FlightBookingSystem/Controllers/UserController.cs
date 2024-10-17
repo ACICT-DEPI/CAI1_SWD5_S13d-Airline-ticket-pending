@@ -52,6 +52,7 @@ namespace FlightBookingSystem.Controllers
 
                 if (result.IsSuccess)
                 {
+
                     if (TempData.ContainsKey("SelectedFlightId") && TempData.ContainsKey("Passengers") && TempData.ContainsKey("Paymentdto"))
                     {
 
@@ -87,7 +88,7 @@ namespace FlightBookingSystem.Controllers
                     }
                     else 
                     {
-          
+                              
                         return RedirectToAction("login");
                     }
                 }
@@ -98,6 +99,7 @@ namespace FlightBookingSystem.Controllers
         
             return View(createUserDto);
         } 
+
 
         // Login: Display login form
         [HttpGet]
@@ -149,14 +151,14 @@ namespace FlightBookingSystem.Controllers
                         var booking = userDb.Bookings;
                         User userDb1 = await userRepository.GetUserByEmailAsync(loginDto.Email);
 
-
+                        userService.SignInUserAsync(userDb1.Email);
                         return RedirectToAction("Profile", userDb1);
                     }
                     else
                     {
                         User userDb = await userRepository.GetUserByEmailAsync(loginDto.Email);
                         var booking = userDb.Bookings;
-
+                        userService.SignInUserAsync(userDb.Email);
                         return RedirectToAction("Profile", userDb);
                     }
                 }

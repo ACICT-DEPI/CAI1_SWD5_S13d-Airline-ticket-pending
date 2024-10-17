@@ -1,11 +1,13 @@
 ﻿using FlightBookingSystem.DTOs;
 using FlightBookingSystem.Models;
 using FlightBookingSystem.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace FlightBookingSystem.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Admin))] 
     public class AdminController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -43,7 +45,7 @@ namespace FlightBookingSystem.Controllers
             {
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
-               
+
             };
 
             return View(updateUserDto); // Return the view with user details

@@ -52,14 +52,12 @@ namespace FlightBookingSystem.Controllers
 
                 if (result.IsSuccess)
                 {
-
                     if (TempData.ContainsKey("SelectedFlightId") && TempData.ContainsKey("Passengers") && TempData.ContainsKey("Paymentdto"))
                     {
-
                         var flightId = (int)TempData["SelectedFlightId"];
                         var passengersJson = (string)TempData["Passengers"];
                         var paymentJson = (string)TempData["Paymentdto"];
-                        IEnumerable<User> u = await userRepository.GetAllAsync();
+                        var u = await userRepository.GetAllAsync();
                         var userid = u.LastOrDefault()?.UserId ?? 0;
                         var flight = await flightRepository.GetById(flightId);
                         var passengers = JsonConvert.DeserializeObject<List<PassengerDto>>(passengersJson);
@@ -73,32 +71,30 @@ namespace FlightBookingSystem.Controllers
                             PaymentMethod = payment.PaymentMethod,
                             PaymentDate = payment.ExpiryDate
                         };
-                        airLineD.Payments.AddAsync(paymentDb);
-                        airLineD.SaveChangesAsync();
-                        IEnumerable<User> use = await userRepository.GetAllAsync();
-                        User userdb = use.LastOrDefault();
-                        Booking b = airLineD.Bookings.FirstOrDefault(b => b.BookingId == Bookid);
+                        await airLineD.Payments.AddAsync(paymentDb);
+                        await airLineD.SaveChangesAsync();
+                        var use = await userRepository.GetAllAsync();
+                        var userdb = use.LastOrDefault();
+                        var b = airLineD.Bookings.FirstOrDefault(b => b.BookingId == Bookid);
                         b.Status = BookingStatus.Confirmed;
-                        userdb.Bookings.Add(b); // Add a new Booking object
+                        userdb.Bookings.Add(b);
                         airLineD.Users.Update(userdb);
-                        airLineD.SaveChanges();
-                        User userDb1 = await userRepository.GetUserByEmailAsync(createUserDto.Email);
+                        await airLineD.SaveChangesAsync();
+                        var userDb1 = await userRepository.GetUserByEmailAsync(createUserDto.Email);
                         TempData["BookingId"] = Bookid;
                         return RedirectToAction("Profile", userDb1);
                     }
-                    else 
+                    else
                     {
-                              
                         return RedirectToAction("login");
                     }
                 }
 
-             
                 ModelState.AddModelError("", result.ErrorMessage);
             }
-        
+
             return View(createUserDto);
-        } 
+        }
 
 
         // Login: Display login form
